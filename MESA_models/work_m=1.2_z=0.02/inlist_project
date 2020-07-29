@@ -1,0 +1,30 @@
+&star_job
+
+  ! begin with a pre-main sequence model
+    create_pre_main_sequence_model = .true.
+
+  ! display on-screen plots
+    pgstar_flag = .true.
+
+/ !end of star_job namelist
+
+
+&controls
+
+  ! starting specifications
+      initial_mass = 1.2
+      initial_z = 0.02d0
+
+  ! Stop when center He abundance falls below 1d-3
+      xa_central_lower_limit_species(1) = 'he4'
+      xa_central_lower_limit(1) = 1d-3
+
+  ! Solver Controls      
+!      varcontrol_target = 1d-4
+!      delta_lgL_He_limit = 1d-3
+
+  ! options for energy conservation (see MESA V, Section 3)
+     use_dedt_form_of_energy_eqn = .true.
+     use_gold_tolerances = .true.
+
+/ ! end of controls namelist
