@@ -11,7 +11,7 @@ log_Teff_index = 37
 
 
 pms_cutoff = 1e8 # Ignore times before 100 MYr (pre-main sequence)
-RGB_Teff_cut = 4750
+log_g_RGB_cut = 4.
 
 # Get the 1.2 M_sun Z=0.02 model track
 hist = load_history_name('../ModelTracks/m=1.0_z=0.02.data')
@@ -25,12 +25,12 @@ age = age[sel]
 
 
 # Make a quick logTeff cut
-log_Teff = hist[:,log_Teff_index]
-sel = (10**log_Teff < RGB_Teff_cut)
+log_g = hist[:,log_g_index]
+sel = (log_g < log_g_RGB_cut)
 
+log_Teff =  hist[sel, log_Teff_index]
 log_g = hist[sel, log_g_index]
 dt = 10**hist[sel, log_dt_index] # years
-
 age = np.cumsum(dt) # Starting from when T first fell below RGB_Teff_cut
 
 print(age.shape)
