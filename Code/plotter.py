@@ -41,10 +41,3 @@ ax.plot(age, log_g)
 plt.xlabel('Time Since Start of RGB (years)')
 plt.ylabel('$\log g / \mathrm{cm\,s^{-2}}$')
 plt.savefig('../Plots/log_g_1.0_msun.pdf')
-
-fig, ax = plt.subplots()
-ax.plot(log_g, dt)
-plt.xlabel('Time Since Start of RGB (years)')
-plt.ylabel('$\log g / \mathrm{cm\,s^{-2}}$')
-plt.savefig('../Plots/log_g_dt_1.0_msun.pdf')
-
