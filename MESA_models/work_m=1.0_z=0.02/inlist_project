@@ -48,8 +48,7 @@
       Zbase = 0.02d0
 
   ! Solver
-      varcontrol_target = 1d-3
-      delta_lgL_He_limit = 0.01d0
+      varcontrol_target = 1d-4
 
   ! Stopping condition
       xa_central_lower_limit_species(1) = 'he4'
