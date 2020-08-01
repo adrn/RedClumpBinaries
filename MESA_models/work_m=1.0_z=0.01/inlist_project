@@ -54,4 +54,8 @@
       xa_central_lower_limit_species(1) = 'he4'
       xa_central_lower_limit(1) = 1d-3
 
+  ! Mixing
+      set_min_D_mix = .true.
+      min_D_mix = 1d2
+
 / ! end of controls namelist

@@ -43,3 +43,10 @@ data = np.array(make_summary('../ModelTracks/m=1.2_z=0.02.data')).T
 np.savetxt('../ModelTracks/m=1.2_z=0.02_summary.data', data, header='# dt (years), log_Teff/K, log_g/(cm/s^2)')
 data = np.array(make_summary('../ModelTracks/m=1.4_z=0.02.data')).T
 np.savetxt('../ModelTracks/m=1.4_z=0.02_summary.data', data, header='# dt (years), log_Teff/K, log_g/(cm/s^2)')
+
+data = np.array(make_summary('../ModelTracks/m=1.0_z=0.01.data')).T
+np.savetxt('../ModelTracks/m=1.0_z=0.01_summary.data', data, header='# dt (years), log_Teff/K, log_g/(cm/s^2)')
+data = np.array(make_summary('../ModelTracks/m=1.2_z=0.01.data')).T
+np.savetxt('../ModelTracks/m=1.2_z=0.01_summary.data', data, header='# dt (years), log_Teff/K, log_g/(cm/s^2)')
+data = np.array(make_summary('../ModelTracks/m=1.4_z=0.01.data')).T
+np.savetxt('../ModelTracks/m=1.4_z=0.01_summary.data', data, header='# dt (years), log_Teff/K, log_g/(cm/s^2)')
