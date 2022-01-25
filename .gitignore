@@ -124,3 +124,5 @@ venv.bak/
 # Fortran
 *.o
 *.mod
+
+data/*
