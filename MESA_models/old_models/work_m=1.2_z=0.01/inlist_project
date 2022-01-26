@@ -1,0 +1,62 @@
+&star_job
+
+  ! begin with a pre-main sequence model
+    create_pre_main_sequence_model = .true.
+
+  ! display on-screen plots
+    pgstar_flag = .true.
+
+  ! Rotation
+    new_surface_rotation_v = 2 ! solar (km sec^1)
+    set_near_zams_surface_rotation_v_steps = 10 ! to turn on rotation when near zams
+
+    change_D_omega_flag = .true.
+    new_D_omega_flag = .true.
+
+  ! Opacity
+      kappa_file_prefix = 'gs98'
+
+  ! Net
+      change_initial_net = .true.
+      new_net_name = 'o18_and_ne22.net'
+
+/ !end of star_job namelist
+
+
+&controls
+
+  ! starting specifications
+    initial_mass = 1.2 ! in Msun units
+    initial_z = 0.01
+
+  ! options for energy conservation (see MESA V, Section 3)
+     use_dedt_form_of_energy_eqn = .true.
+     use_gold_tolerances = .true.
+
+  ! Mixing
+      am_nu_visc_factor = 0
+      am_D_mix_factor = 0.0333333333333333d0
+      D_DSI_factor = 0
+      D_SH_factor = 1
+      D_SSI_factor = 1
+      D_ES_factor = 1
+      D_GSF_factor = 1
+      D_ST_factor = 1
+
+  ! Opacity
+      use_Type2_opacities = .true.
+      Zbase = 0.01d0
+
+  ! Solver
+      varcontrol_target = 1d-4
+      delta_lgL_He_limit = 0.01d0
+
+  ! Stopping condition
+      xa_central_lower_limit_species(1) = 'he4'
+      xa_central_lower_limit(1) = 1d-3
+
+  ! Mixing
+      set_min_D_mix = .true.
+      min_D_mix = 1d2
+
+/ ! end of controls namelist
