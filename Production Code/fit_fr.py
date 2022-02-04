@@ -52,7 +52,7 @@ for m_min,m_max,metal_mask,q_res,_,_ in opts:
 
     ax.plot(data_x,
             data_x * slope + offset,
-            marker='', drawstyle='steps-mid', zorder=10)
+            marker='', zorder=10)
 
     ax.errorbar(data_x,
                 data_y,
