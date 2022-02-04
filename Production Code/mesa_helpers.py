@@ -28,7 +28,6 @@ def dt_dlogg_ascent(log_g, dlog_g):
 			(age < age[i_TRGB])
 		)
 
-	dage = np.sum(age[ran])
+	dage = np.sum(dt[ran])
 
 	return dage/dlog_g
-
