@@ -57,7 +57,10 @@ for m_min,m_max,metal_mask,q_res,_,_ in opts:
     ax.errorbar(data_x,
                 data_y,
                 data_yerr,
-                ecolor='#aaaaaa', ls='none', marker='', zorder=5)   
+                ecolor='#aaaaaa', ls='none', marker='', zorder=5)
+
+    ax.set_xlabel(r'$\log g$')
+    ax.set_ylabel('Binary Fraction')
     plt.savefig(f'cache/fr_fit_{m_min:2g}_{m_max:2g}.pdf')
     plt.clf()
 

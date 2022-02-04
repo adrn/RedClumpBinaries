@@ -7,6 +7,7 @@ cache/q_fits.data: cache/parsed.data config.py fit_q.py slice_helpers.py fit_hel
 	python fit_q.py
 
 cache/fr_fits.data: cache/parsed.data cache/q_fits.data fit_fr.py
+	python fit_fr.py
 
 clean:
 	rm cache/*.data

@@ -68,6 +68,8 @@ for l, r in list(zip(mh_bins[:-1], mh_bins[1:])) + [(mh_bins.min(), mh_bins.max(
     plt.hist(logg_data, 
              bins=50, density=True, histtype='step')
     plt.plot(grid, prob_density)
+    plt.xlabel(r'$\log g$')
+    plt.ylabel('Number Density of Stars')
     plt.savefig(f'cache/q_fit_{l:2g}_{r:2g}.pdf')
     plt.clf()
 
