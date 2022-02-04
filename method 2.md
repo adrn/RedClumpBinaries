@@ -4,11 +4,11 @@
 - Binary stars that are too close together likely merge along the way, including many systems whose orbits lie entirely within the envelope of the primary on the TRGB.
 - When stars contract onto the CHeB they should have very few binaries.
 - As a result we expect the Red Clump (RC), which are a mix of CHeB and RGB stars, to be depleted in binaries relative to the RGB.
-- Stars move fast from the TRGB onto the CHeB, then sit on the CHeB for a while, then move fast onto the AGB.  **Todo: Check how fast for each.** 
+- Stars move fast from the TRGB onto the CHeB, then sit on the CHeB for a while, then move fast onto the AGB.
 
 ## Definitions
 
-- We can identify all binaries binaries whose orbits are smaller than  $\sim 10^3 R_\odot$.
+- We can identify all binaries whose orbits are smaller than  $\sim 10^3 R_\odot$.
   - That's also the radius of a TRGB star.
   - We'll call these systems binaries going forward, and call all other systems are single.
 - With these definitions:
