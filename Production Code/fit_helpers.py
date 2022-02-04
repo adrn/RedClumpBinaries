@@ -27,6 +27,6 @@ def fit_line(x, y, yerr):
             'slope': init_slope
         })
 
-        samples = pmx.sample(start=res, return_inferencedata=True, cores=1)
+        samples = pmx.sample(start=res, return_inferencedata=True, cores=4)
     
     return res, samples
