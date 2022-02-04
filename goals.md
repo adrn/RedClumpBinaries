@@ -1,6 +1,7 @@
 - For metallicity: a few bins, plus one that lumps them all together.
 
-- [ ] Find the lowest metallicity such that CHeB stars are still in APOGEE.
+- [x] Find the lowest metallicity such that CHeB stars are still in APOGEE. **[Done. Sticking to M/H > -1.5]**
+  - [ ] Adrian will check what doing J-K cuts does.
 - [ ] Get $q(\log g)$, the distribution of CHeB stars (i.e. the normalized distribution of the excess of stars on the RC).
   - [ ] Fit a Gaussian+background to number counts in each bin of metallicity.
 - [ ] Get $f_r(\log g)$, the binary fraction for stars ascending the RGB.
