@@ -32,13 +32,13 @@ for i in range(len(q_fits)):
     qs = q(data_x, q_res['mu_logg'], np.exp(q_res['logsigma_logg']))
 
     # Plot the fit just for sanity checks
-    fig, ax = plt.subplots(2, 2, figsize=(7, 6))
+    fig, ax = plt.subplots(2, 2, figsize=(8, 7))
 
     ax[0,0].plot(data_x, fr / data_y - 1)
     ax[0,0].set_xlabel(r'$\log g$')
     ax[0,0].set_ylabel(r'$f_r/f-1$')
 
-    ax[0,1].plot(data_x, (1/qs)*(fr / data_y - 1))
+    ax[0,1].plot(data_x[qs > q_min], ((1/qs)*(fr / data_y - 1))[qs > q_min])
     ax[0,1].set_xlabel(r'$\log g$')
     ax[0,1].set_ylabel(r'$(1/q)(f_r/f-1)$')
 
