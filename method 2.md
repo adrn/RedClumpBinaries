@@ -8,7 +8,7 @@
 
 ## Definitions
 
-- We can identify all binaries binaries whose orbits are smaller than  $\sim 10^3 R_\odot$.
+- We can identify all binaries whose orbits are smaller than  $\sim 10^3 R_\odot$.
   - That's also the radius of a TRGB star.
   - We'll call these systems binaries going forward, and call all other systems are single.
 - With these definitions:
