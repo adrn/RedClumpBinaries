@@ -23,9 +23,9 @@ i_TRGB = np.argmin(log_g_MESA)
 
 def dt_dlogg_ascent(log_g, dlog_g):
 	ran = np.where(
-			log_g_MESA > log_g - dlog_g/2 &
-			log_g_MESA < log_g + dlog_g/2 &
-			age < age[i_TRGB]
+			(log_g_MESA > log_g - dlog_g/2) &
+			(log_g_MESA < log_g + dlog_g/2) &
+			(age < age[i_TRGB])
 		)
 
 	dage = np.sum(age[ran])
