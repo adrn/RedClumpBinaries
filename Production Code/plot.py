@@ -32,7 +32,7 @@ for i in range(len(q_fits)):
     qs = q(data_x, q_res['mu_logg'], np.exp(q_res['logsigma_logg']))
 
     # Plot the fit just for sanity checks
-    fig, ax = plt.subplots(2, 2, figsize=(6, 5))
+    fig, ax = plt.subplots(2, 2, figsize=(7, 6))
 
     ax[0,0].plot(data_x, fr / data_y - 1)
     ax[0,0].set_xlabel(r'$\log g$')
@@ -47,4 +47,5 @@ for i in range(len(q_fits)):
     ax[1,0].set_ylabel(r'$q$')
 
     plt.savefig(f'cache/fit_diagnostic_{m_min:2g}_{m_max:2g}.pdf')
+    plt.tight_layout()
     plt.clf()
