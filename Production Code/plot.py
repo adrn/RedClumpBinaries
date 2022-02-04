@@ -20,7 +20,31 @@ q_fits = load(open('cache/q_fits.data','rb'))
 fr_fits = load(open('cache/fr_fits.data','rb'))
 
 for i in range(len(q_fits)):
-	m_min, m_max, metal_mask, q_res, _, _ = q_fits[i]
-	_, _, _, slope, offsets = fr_fits[i]
+    # Unpack fit data
+    m_min, m_max, metal_mask, q_res, _, _ = q_fits[i]
+    _, _, _, slope, offset = fr_fits[i]
 
-	
+    # Bin binary fraction in log(g)
+    data_x, data_y, data_yerr = bin_f_binary_in_logg(metadata, binaries_mask, metal_mask, logg_bins)
+
+    # Calculate fr and q
+    fr = data_x * slope + offset
+    qs = q(data_x, q_res['mu_logg'], np.exp(q_res['logsigma_logg']))
+
+    # Plot the fit just for sanity checks
+    fig, ax = plt.subplots(2, 2, figsize=(6, 5))
+
+    ax[0,0].plot(data_x, fr / data_y - 1)
+    ax[0,0].set_xlabel(r'$\log g$')
+    ax[0,0].set_ylabel(r'$f_r/f-1$')
+
+    ax[0,1].plot(data_x, (1/qs)*(fr / data_y - 1))
+    ax[0,1].set_xlabel(r'$\log g$')
+    ax[0,1].set_ylabel(r'$(1/q)(f_r/f-1)$')
+
+    ax[1,0].plot(data_x, qs)
+    ax[1,0].set_xlabel(r'$\log g$')
+    ax[1,0].set_ylabel(r'$q$')
+
+    plt.savefig(f'cache/fit_diagnostic_{m_min:2g}_{m_max:2g}.pdf')
+    plt.clf()
