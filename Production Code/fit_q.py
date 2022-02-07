@@ -17,7 +17,7 @@ from pickle import load, dump
 
 metadata, binaries_mask = load(open('cache/parsed.data','rb'))
 
-# Loop over metallicity bins and fit a Gaussian+background model.
+# Loop over metallicity and mass bins and fit a Gaussian+background model.
 opts = []
 for l, r in list(zip(mh_bins[:-1], mh_bins[1:])) + [(mh_bins.min(), mh_bins.max())]:
     print('Fitting metallicity range',l,r)

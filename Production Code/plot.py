@@ -22,6 +22,10 @@ fr_fits = load(open('cache/fr_fits.data','rb'))
 
 tau_cheb_s = []
 
+plt.hist(metadata['mass50'], bins=[0.5,0.6,0.7,0.8,1,1.2,1.4,1.6,1.8,2,2.5,3,4])
+plt.show()
+exit()
+
 for i in range(len(q_fits)):
     # Unpack fit data
     m_min, m_max, metal_mask, q_res, _, _ = q_fits[i]
@@ -57,7 +61,10 @@ for i in range(len(q_fits)):
     ax[1,1].set_ylabel(r'$\tau_{\rm CHeB}$')
 
     # Average tau_cheb over the CHeB
-    tau_cheb_s.append((m_min,m_max,np.sum(dlogg * dt_dlogg *(fr / data_y - 1))))
+    tau_cheb_s.append((
+        m_min,m_max,
+        np.sum((dlogg * dt_dlogg *(fr / data_y - 1))[qs > q_min])
+    ))
 
     plt.savefig(f'cache/fit_diagnostic_{m_min:2g}_{m_max:2g}.pdf')
     plt.tight_layout()
@@ -65,8 +72,9 @@ for i in range(len(q_fits)):
 
 # Plot versus metallicity
 plt.figure()
-for m_min,m_max,tau_cheb in tau_cheb_s:
-    plt.plot([m_min,m_max],[tau_cheb,tau_cheb],color='k')
+for m_min,m_max,tau_cheb in tau_cheb_s[:-1]:
+    plt.scatter([0.5*(m_min+m_max)],[tau_cheb],color='k')
+plt.axhline(tau_cheb_s[-1][2])
 plt.xlabel(r'$[M/H]$')
 plt.ylabel(r'$\tau_{\rm CHeB}$')
 plt.savefig(f'cache/tau_cheb_metals.pdf')

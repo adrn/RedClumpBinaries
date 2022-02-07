@@ -29,10 +29,12 @@ def bin_f_binary_in_logg(metadata, binaries_mask, mask, logg_bins):
     
     return data_x, data_y, data_yerr
 
-def mask_metallicity(metadata, m_low, m_high):
+def mask_metallicity_and_mass(metadata, metal_low, metal_high, mass_low, mass_high):
     mask = (
-        (metadata['M_H'] > m_low) &
-        (metadata['M_H'] <= m_high) &
+        (metadata['M_H'] > metal_low) &
+        (metadata['M_H'] <= metal_high) &
+        (metadata['mass50'] > mass_low) &
+        (metadata['mass50'] <= mass_high) &
         (metadata['LOGG'] > logg_lims[0]) & 
         (metadata['LOGG'] < logg_lims[1])
     )

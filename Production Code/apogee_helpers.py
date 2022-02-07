@@ -55,4 +55,9 @@ def get_metadata():
     metadata = at.QTable.read(metadata_path)
     return metadata
 
-
+def get_masses():
+    mass_path = 'cache/APOGEE_DR17_EDR3_STARHORSE_v2.fits'
+    masses = at.QTable.read(mass_path)
+    masses = masses[masses['StarHorse_OUTPUTFLAGS'].mask] # Drop anything with a flag set.
+    masses = {'APOGEE_ID': masses['APOGEE_ID'], 'mass16': masses['mass16'], 'mass50': masses['mass50'], 'mass84': masses['mass84']}
+    return masses

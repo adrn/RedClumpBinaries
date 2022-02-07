@@ -11,7 +11,7 @@ from aesara_theano_fallback import tensor as tt
 import pymc3 as pm
 import pymc3_ext as pmx
 
-from apogee_helpers import download_file
+from apogee_helpers import download_file, get_masses
 from pickle import dump
 
 # Caching
@@ -42,11 +42,21 @@ metadata = at.QTable.read(metadata_path)
 metadata = at.unique(at.join(allstar, metadata, keys='APOGEE_ID'), 
                      keys='APOGEE_ID')
 
+# Get masses
+masses = get_masses()
+metadata = at.join(metadata, masses)
+
+# We don't believe there are RGB stars below ~0.8Msun.
+# We also don't have enough stars above ~2.5Msun for them to be
+# worth analyzing, so we drop stars outside this range.
+mass_mask = (metadata['mass50'] > mass_lims[0]) & (metadata['mass50'] < mass_lims[1])
+metadata = metadata[mass_mask]
+
 # Find binaries
 llr_const = metadata['max_unmarginalized_ln_likelihood'] - metadata['robust_constant_ln_likelihood']
 binaries_mask = (llr_const > 4)
 
 # Write in a faster-loading format.
-metadata = {'LOGG': metadata['LOGG'], 'M_H': metadata['M_H']}
+metadata = metadata[('LOGG', 'M_H', 'mass16', 'mass50', 'mass84')]
 
 dump([metadata, binaries_mask],open('cache/parsed.data','wb'))
