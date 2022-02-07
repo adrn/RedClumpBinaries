@@ -45,7 +45,7 @@ for metal_low,metal_high,mass_low,mass_high,metal_mass_mask,q_res,_,_ in opts:
     slope = res['slope']
     offset = res['const_y']
 
-    fr_fits.append((m_min,m_max,metal_mask,slope,offset))
+    fr_fits.append((metal_low,metal_high,mass_low,mass_high,metal_mass_mask,slope,offset))
 
     # Plot the fit just for sanity checks
     fig, ax = plt.subplots(1, 1, figsize=(6, 5))
