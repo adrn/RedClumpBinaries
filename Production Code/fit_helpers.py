@@ -3,6 +3,7 @@ import numpy as np
 from aesara_theano_fallback import tensor as tt
 import pymc3 as pm
 import pymc3_ext as pmx
+from config import logg_lims
 
 def q(x,mu,sigma):
     return norm.pdf((x-mu)/sigma)
@@ -69,4 +70,4 @@ def fit_mixture_model(logg_data):
         # Store the distribution in case we want to plot it
         prob_density = np.exp(pmx.eval_in_model(lnlike_grid, point=res))
     
-    return res, prob_density
+    return res, grid, prob_density

@@ -10,8 +10,8 @@ from aesara_theano_fallback import tensor as tt
 import pymc3 as pm
 import pymc3_ext as pmx
 
-from config import mh_bins, logg_lims
-from slice_helpers import mask_metallicity
+from config import mh_bins, logg_lims, mass_bins
+from slice_helpers import mask_metallicity_and_mass
 from fit_helpers import fit_mixture_model
 from pickle import load, dump
 
@@ -19,22 +19,24 @@ metadata, binaries_mask = load(open('cache/parsed.data','rb'))
 
 # Loop over metallicity and mass bins and fit a Gaussian+background model.
 opts = []
-for l, r in list(zip(mh_bins[:-1], mh_bins[1:])) + [(mh_bins.min(), mh_bins.max())]:
-    print('Fitting metallicity range',l,r)
-    mask = mask_metallicity(metadata,l,r)
-    logg_data = metadata['LOGG'][mask]
-    
-    res, prob_density = fit_mixture_model(logg_data)
-    opts.append([l,r,mask,res,logg_data,prob_density])
+for metal_low, metal_high in list(zip(mh_bins[:-1], mh_bins[1:])) + [(mh_bins.min(), mh_bins.max())]:
+    for mass_low, mass_high in list(zip(mass_bins[:-1], mass_bins[1:])) + [(mass_bins.min(), mass_bins.max())]:
+        print('Fitting metallicity range',metal_low,metal_high,'and mass range',mass_low,mass_high)
 
-    # Plot the fit just for sanity checks
-    plt.figure()
-    plt.hist(logg_data, 
-             bins=50, density=True, histtype='step')
-    plt.plot(grid, prob_density)
-    plt.xlabel(r'$\log g$')
-    plt.ylabel(r'$dN_\star/d\log g$')
-    plt.savefig(f'cache/q_fit_{l:2g}_{r:2g}.pdf')
-    plt.clf()
+        mask = mask_metallicity_and_mass(metadata, metal_low, metal_high, mass_low, mass_high)
+        logg_data = metadata['LOGG'][mask]
+        
+        res, grid, prob_density = fit_mixture_model(logg_data)
+        opts.append([metal_low,metal_high,mass_low,mass_high,mask,res,logg_data,prob_density])
+
+        # Plot the fit just for sanity checks
+        plt.figure()
+        plt.hist(logg_data, 
+                 bins=50, density=True, histtype='step')
+        plt.plot(grid, prob_density)
+        plt.xlabel(r'$\log g$')
+        plt.ylabel(r'$dN_\star/d\log g$')
+        plt.savefig(f'cache/q_fit_{metal_low:2g}_{metal_high:2g}_{mass_low:2g}_{mass_high:2g}.pdf')
+        plt.clf()
 
 dump(opts,open('cache/q_fits.data','wb'))

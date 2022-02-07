@@ -12,4 +12,4 @@ q_min = 0.1 # Defines the edge of the CHeB.
 			# Smaller values include more of the CHeB but increase sensitivity to fits/noise.
 
 mass_lims = (0.8,2.5)
-mass_bins = [0.8,1,1.25,1.5,2,2.5]
+mass_bins = np.array([0.8,1,1.25,1.5,2,2.5])

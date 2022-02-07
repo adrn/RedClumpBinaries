@@ -19,9 +19,9 @@ metadata, binaries_mask = load(open('cache/parsed.data','rb'))
 opts = load(open('cache/q_fits.data','rb'))
 
 fr_fits = []
-for m_min,m_max,metal_mask,q_res,_,_ in opts:
+for metal_low,metal_high,mass_low,mass_high,metal_mass_mask,q_res,_,_ in opts:
     # Bin binary fraction in log(g)
-    data_x, data_y, data_yerr = bin_f_binary_in_logg(metadata, binaries_mask, metal_mask, logg_bins)
+    data_x, data_y, data_yerr = bin_f_binary_in_logg(metadata, binaries_mask, metal_mass_mask, logg_bins)
 
     # Exclude the Red Clump from the fit
     qs = q(logg_bins, q_res['mu_logg'], np.exp(q_res['logsigma_logg']))
@@ -61,7 +61,7 @@ for m_min,m_max,metal_mask,q_res,_,_ in opts:
 
     ax.set_xlabel(r'$\log g$')
     ax.set_ylabel('Binary Fraction')
-    plt.savefig(f'cache/fr_fit_{m_min:2g}_{m_max:2g}.pdf')
+    plt.savefig(f'cache/fr_fit_{metal_low:2g}_{metal_high:2g}_{mass_low:2g}_{mass_high:2g}.pdf')
     plt.clf()
 
 dump(fr_fits,open('cache/fr_fits.data','wb'))
