@@ -12,6 +12,7 @@ import pymc3 as pm
 import pymc3_ext as pmx
 
 from apogee_helpers import download_file, get_masses
+from config import mass_lims
 from pickle import dump
 
 # Caching

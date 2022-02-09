@@ -5,6 +5,7 @@ dlogg = 0.05
 logg_bins = np.arange(*logg_lims, dlogg)
 
 n_metal_bins = 3
+Z_solar = 0.014
 metallicity_lims = (-1, 0.6) # log[M/H]
 mh_bins = np.linspace(*metallicity_lims, n_metal_bins + 1)
 

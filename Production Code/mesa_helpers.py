@@ -1,32 +1,47 @@
-import mesa_reader as mr
 import numpy as np
+from pickle import load
 
-pms_cutoff = 1e8 # Ignore times before 100 MYr (pre-main sequence)
-log_g_RGB_cut = 3.
+masses,metallicities,data = load(open('cache/mesa_parsed.data','rb'))
 
-# Get the 1.2 M_sun Z=0.02 model track
-h=mr.MesaData('../ModelTracks/m=1.2_z=0.02.data')
+def get_dt_dlogg_ascent_single(mass, metallicity, log_g, dlog_g):
+	log_g_MESA, age, i_TRGB, dt = data[(mass,metallicity)]
 
-age = h.star_age
-log_g_MESA = h.log_g
-dt = 10**h.log_dt
-
-# Cut off the pre-main sequence and main-sequence
-sel = (age > pms_cutoff) & (log_g_MESA < log_g_RGB_cut)
-
-log_g_MESA = log_g_MESA[sel]
-dt = dt[sel]
-age = np.cumsum(dt) # Age from the start of the RGB
-
-# Find the TRGB
-i_TRGB = np.argmin(log_g_MESA)
-
-def dt_dlogg_ascent(log_g, dlog_g):
 	ran = np.where(
 			(log_g_MESA > log_g - dlog_g/2) &
 			(log_g_MESA < log_g + dlog_g/2) &
 			(age < age[i_TRGB])
 		)
 
-	dage = 5 * np.sum(dt[ran])
+	dage = np.sum(dt[ran])
+
 	return dage/dlog_g
+
+def dt_dlogg_ascent(mass, metallicity, log_g, dlog_g):
+
+	i_mass = -1
+	for i in range(len(masses)-1):
+		if masses[i] <= mass and masses[i+1] >= mass:
+			mix_i0 = (mass - masses[i])/(masses[i+1]-masses[i])
+			mix_i1 = 1 - mix_i0
+			i_mass = i
+	if i_mass == -1:
+		print('Error: out of bounds mass',mass)
+		exit()
+
+	i_metal = -1
+	for i in range(len(metallicities)-1):
+		if metallicities[i][0] <= metallicity and metallicities[i+1][0] >= metallicity:
+			mix_j0 = (metallicity - metallicity[i][0])/(metallicity[i+1][0]-metallicity[i][0])
+			mix_j1 = 1 - mix_i0
+			i_metal = i
+
+
+	d_00 = get_dt_dlogg_ascent_single_mass(masses[i_mass],   metallicities[i_metal],    log_g, dlog_g)
+	d_01 = get_dt_dlogg_ascent_single_mass(masses[i_mass],   metallicities[i_metal+1],  log_g, dlog_g)
+	d_10 = get_dt_dlogg_ascent_single_mass(masses[i_mass+1], metallicities[i_metal],    log_g, dlog_g)
+	d_11 = get_dt_dlogg_ascent_single_mass(masses[i_mass+1], metallicities[i_metal+1],  log_g, dlog_g)
+
+	d_0 = d_00 * mix_j0 + d_01 * mix_j1
+	d_1 = d_10 * mix_j0 + d_11 * mix_j1
+
+	return d_0 * mix_i0 + d_1 * mix_i1
