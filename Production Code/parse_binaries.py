@@ -48,8 +48,8 @@ masses = get_masses()
 metadata = at.join(metadata, masses)
 
 # We don't believe there are RGB stars below ~0.8Msun.
-# We also don't have enough stars above ~2.5Msun for them to be
-# worth analyzing, so we drop stars outside this range.
+# We chop off M > 2Msun because that gets contaminated by the
+# secondary clump.
 mass_mask = (metadata['mass50'] > mass_lims[0]) & (metadata['mass50'] < mass_lims[1])
 metadata = metadata[mass_mask]
 
