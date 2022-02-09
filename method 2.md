@@ -86,11 +86,67 @@ $$
 $$
 or
 $$
- \tau_{\rm CHeB} = \frac{1}{q(\log g)}\left(\frac{f_r(\log g)}{f(\log g)}-1\right)\left.\frac{dt}{d\log g}\right|_r
+\tau_{\rm CHeB} = \frac{1}{q(\log g)}\left(\frac{f_r(\log g)}{f(\log g)}-1\right)\left.\frac{dt}{d\log g}\right|_r
 $$
 The object on the LHS is the thing we want! And note that it's independent of $\log g$, which means the object on the RHS ought to be independent of $\log g$ as well. That provides something of a validation check that we can perform. If it's not independent (which seems likely given all the uncertainties in the analysis) we probably want to note that and provide an average or central value for $\tau_{\rm CHeB}$. (Probably don't believe values on the edges of the RC where $q$ gets small anyway...).
 
+---
 
+## Updates
+
+- The validation check doesn't work. The data's just too noisy. So we see lots of variation in the RHS in (10).
+- Integrating over $\log g$ with measure $q$ produces results that seem well-behaved and consistent between e.g. adjacent bins in metallicity. So we'll use that as our headline result.
+- I checked and $dt/d\log g|r$ does vary substantially (2x or more) with mass, so we need to account for mass here.
+
+
+
+## Planned Storyboard
+
+- Intro
+  - The CHeB is interesting.
+  - Predicting CHeB timing is hard because convective boundaries screw us over (MESA 4, MESA 5).
+  - If we could tell which stars are CHeB vs RGB in the Red Clump, the ratio of their numbers would tell us the time spent on the CHeB.
+    - This is a hard sample to get, because it requires seismology.
+  - Conveniently, on the RGB stars get big, and engulf their binary companions.
+  - Hence, binarity is correlated with being a CHeB star in the Red Clump.
+  - We use APOGEE stars with binarity determinations to figure out how long stars spend on the CHeB.
+- Theory
+  - Stars expand dramatically as they pass from the RC to the tip of the RGB (TRGB).
+    - Figure: HR diagram showing evolution from the ZAMS through the TACHeB.
+  - Binary stars that are too close together likely merge along the way, including many systems whose orbits lie entirely within the envelope of the primary on the TRGB.
+  - When stars contract onto the CHeB they should have very few binaries.
+  - As a result we expect the Red Clump (RC), which are a mix of CHeB and RGB stars, to be depleted in binaries relative to the RGB.
+  - Stars move fast from the TRGB onto the CHeB, then sit on the CHeB for a while, then move fast onto the AGB.
+  - Run through the logic above through equation (10).
+- Data
+  - Adrian writes some stuff about APOGEE and the data set.
+  - Explain our assumptions, e.g. that we take $[M/H]=0$ when $Z_\odot=0.014$ for running MESA models with APOGEE metallicities.
+- Method
+  - We do some basic cuts on mass, metallicity, $\log g$.
+  - We divide the data into bins of mass and metallicity. For each bin:
+    - We fit $q$ using a mixture model.
+      - Show an example figure.
+    - We fit $f_r$ using a linear model excluding the region where $q > q_{\rm min}$.
+      - Show an example figure.
+    - We interpolate $dt/d\log g|r$ from MESA models run through the ZACHeB for various masses and metallicities.
+      - Show a figure of $dt/d\log g|r$ versus $\log g$ for a few masses.
+    - Our headline numbers:
+      - We average equation (10) over the region where $q > q_{\rm min}$, weighting by $q$, giving $\tau_{\rm CHeB}$.
+        - At this stage comment on how there's lots of noise in the RHS of (10), which is why we can't use that directly.
+      - We also average $(1/q)(\frac{f_r(\log g)}{f(\log g)}-1)$, weighted by $q$, over the region where $q > q_{\rm min}$, giving an estimate of $\tau_{\rm CHeB}/\tau_{\rm RGB}$, independent of the MESA models. 
+        - By $\tau_{\rm RGB}$ we mean the time it takes to pass through the Red Clump on the ascent of the RGB, where the Clump is for that (mass, metallicity) bin.
+- Results
+  - Table showing:
+    - Bin properties
+    - Number of stars in each bin
+    - Range in $\log g$ with $q > q_{\rm min}$, identifying the RC.
+    - $\tau_{\rm CHeB}$ in that bin with error bars
+    - $\tau_{\rm CHeB}/\tau_{\rm RGB}$ in that bin with error bars.
+  - Maybe some plots of trends in mass and metallicity?
+- Discussion
+  - Lars can hopefully say something here.
+  - Key point is that the CHeB is much shorter than MESA models suggest.
+    - Points to differences in treatment of convective boundary mixing.
 
 
 
