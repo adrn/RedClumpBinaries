@@ -17,10 +17,10 @@ def fit_line(x, y, yerr):
     init_slope = 0.5
 
     with pm.Model() as model:    
-        const_y = pm.Uniform('const_y', 0., 1)
-        slope = pm.Uniform('slope', 1e-4, 1)
+        const_y = pm.Uniform('const_y', 0, 1)
+        slope = pm.Uniform('slope', 0, 1/(logg_lims[1] - logg_lims[0]))
 
-        model_y = slope * x + const_y
+        model_y = slope * (x - logg_lims[0]) + const_y
         lnlike = pm.Normal('lnlike', mu=model_y, sd=yerr, observed=y)
 
         res = pmx.optimize(start={

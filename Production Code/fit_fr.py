@@ -19,49 +19,53 @@ metadata, binaries_mask = load(open('cache/parsed.data','rb'))
 opts = load(open('cache/q_fits.data','rb'))
 
 fr_fits = []
-for metal_low,metal_high,mass_low,mass_high,metal_mass_mask,q_res,_,_ in opts:
-    # Bin binary fraction in log(g)
-    data_x, data_y, data_yerr = bin_f_binary_in_logg(metadata, binaries_mask, metal_mass_mask, logg_bins)
+for i in range(len(opts)):
+    fr_fits.append([])
+    for j in range(len(opts[i])):
+        metal_low,metal_high,mass_low,mass_high,metal_mass_mask,q_res,_,_ = opts[i][j]
 
-    # Exclude the Red Clump from the fit
-    qs = q(logg_bins, q_res['mu_logg'], np.exp(q_res['logsigma_logg']))
-    exclusion = (min(logg_bins[qs > q_min]),max(logg_bins[qs > q_min]))
+        # Bin binary fraction in log(g)
+        data_x, data_y, data_yerr = bin_f_binary_in_logg(metadata, binaries_mask, metal_mass_mask, logg_bins)
 
-    print('CHeB is in log(g)=',exclusion)
+        # Exclude the Red Clump from the fit
+        qs = q(logg_bins, q_res['mu_logg'], np.exp(q_res['logsigma_logg']))
+        exclusion = (min(logg_bins[qs > q_min]),max(logg_bins[qs > q_min]))
 
-    fit_idx = (
-        (data_x > logg_lims[0]) &
-        np.logical_not((data_x > exclusion[0]) & (data_x < exclusion[1])) &
-        (data_x < logg_lims[1])
-    )
+        print('CHeB is in log(g)=',exclusion)
 
-    fit_x = data_x[fit_idx]
-    fit_y = data_y[fit_idx]
-    fit_yerr = data_yerr[fit_idx]
+        fit_idx = (
+            (data_x > logg_lims[0]) &
+            np.logical_not((data_x > exclusion[0]) & (data_x < exclusion[1])) &
+            (data_x < logg_lims[1])
+        )
 
-    # Fit a line 
-    res, samples = fit_line(fit_x, fit_y, fit_yerr)
+        fit_x = data_x[fit_idx]
+        fit_y = data_y[fit_idx]
+        fit_yerr = data_yerr[fit_idx]
 
-    slope = res['slope']
-    offset = res['const_y']
+        # Fit a line 
+        res, samples = fit_line(fit_x, fit_y, fit_yerr)
 
-    fr_fits.append((metal_low,metal_high,mass_low,mass_high,metal_mass_mask,slope,offset))
+        slope = res['slope']
+        offset = res['const_y']
 
-    # Plot the fit just for sanity checks
-    fig, ax = plt.subplots(1, 1, figsize=(6, 5))
+        fr_fits[-1].append((metal_low,metal_high,mass_low,mass_high,metal_mass_mask,slope,offset))
 
-    ax.plot(data_x,
-            data_x * slope + offset,
-            marker='', zorder=10)
+        # Plot the fit just for sanity checks
+        fig, ax = plt.subplots(1, 1, figsize=(6, 5))
 
-    ax.errorbar(data_x,
-                data_y,
-                data_yerr,
-                ecolor='#aaaaaa', ls='none', marker='', zorder=5)
+        ax.plot(data_x,
+                (data_x - logg_lims[0]) * slope + offset,
+                marker='', zorder=10)
 
-    ax.set_xlabel(r'$\log g$')
-    ax.set_ylabel('Binary Fraction')
-    plt.savefig(f'cache/fr_fit_{metal_low:2g}_{metal_high:2g}_{mass_low:2g}_{mass_high:2g}.pdf')
-    plt.clf()
+        ax.errorbar(data_x,
+                    data_y,
+                    data_yerr,
+                    ecolor='#aaaaaa', ls='none', marker='', zorder=5)
+
+        ax.set_xlabel(r'$\log g$')
+        ax.set_ylabel('Binary Fraction')
+        plt.savefig(f'cache/fr_fit_{metal_low:2g}_{metal_high:2g}_{mass_low:2g}_{mass_high:2g}.pdf')
+        plt.clf()
 
 dump(fr_fits,open('cache/fr_fits.data','wb'))

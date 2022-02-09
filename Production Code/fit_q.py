@@ -20,6 +20,7 @@ metadata, binaries_mask = load(open('cache/parsed.data','rb'))
 # Loop over metallicity and mass bins and fit a Gaussian+background model.
 opts = []
 for metal_low, metal_high in list(zip(mh_bins[:-1], mh_bins[1:])) + [(mh_bins.min(), mh_bins.max())]:
+    opts.append([])
     for mass_low, mass_high in list(zip(mass_bins[:-1], mass_bins[1:])) + [(mass_bins.min(), mass_bins.max())]:
         print('Fitting metallicity range',metal_low,metal_high,'and mass range',mass_low,mass_high)
 
@@ -27,7 +28,7 @@ for metal_low, metal_high in list(zip(mh_bins[:-1], mh_bins[1:])) + [(mh_bins.mi
         logg_data = metadata['LOGG'][mask]
         
         res, grid, prob_density = fit_mixture_model(logg_data)
-        opts.append([metal_low,metal_high,mass_low,mass_high,mask,res,logg_data,prob_density])
+        opts[-1].append([metal_low,metal_high,mass_low,mass_high,mask,res,logg_data,prob_density])
 
         # Plot the fit just for sanity checks
         plt.figure()

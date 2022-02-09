@@ -22,60 +22,59 @@ fr_fits = load(open('cache/fr_fits.data','rb'))
 
 tau_cheb_s = []
 
-plt.hist(metadata['mass50'], bins=[0.5,0.6,0.7,0.8,1,1.2,1.4,1.6,1.8,2,2.5,3,4])
-plt.show()
-exit()
-
 for i in range(len(q_fits)):
-    # Unpack fit data
-    m_min, m_max, metal_mask, q_res, _, _ = q_fits[i]
-    _, _, _, slope, offset = fr_fits[i]
+    tau_cheb_s.append([])
+    for j in range(len(q_fits[i])):
+        # Unpack fit data
+        metal_low,metal_high,mass_low,mass_high, metal_mask, q_res, _, _ = q_fits[i][j]
+        _, _, _, slope, offset = fr_fits[i][j]
 
-    # Bin binary fraction in log(g)
-    data_x, data_y, data_yerr = bin_f_binary_in_logg(metadata, binaries_mask, metal_mask, logg_bins)
+        # Bin binary fraction in log(g)
+        data_x, data_y, data_yerr = bin_f_binary_in_logg(metadata, binaries_mask, metal_mask, logg_bins)
 
-    # Calculate fr and q
-    fr = data_x * slope + offset
-    qs = q(data_x, q_res['mu_logg'], np.exp(q_res['logsigma_logg']))
+        # Calculate fr and q
+        fr = data_x * slope + offset
+        qs = q(data_x, q_res['mu_logg'], np.exp(q_res['logsigma_logg']))
 
-    # Get dt/dlog(g) for the ascent
-    dt_dlogg = np.array(list(dt_dlogg_ascent(logg, dlogg) for logg in data_x))
+        # Get dt/dlog(g) for the ascent
+        dt_dlogg = np.array(list(dt_dlogg_ascent(logg, dlogg) for logg in data_x))
 
-    # Plot the fit just for sanity checks
-    fig, ax = plt.subplots(2, 2, figsize=(8, 7))
+        # Plot the fit just for sanity checks
+        fig, ax = plt.subplots(2, 2, figsize=(8, 7))
 
-    ax[0,0].plot(data_x, fr / data_y - 1)
-    ax[0,0].set_xlabel(r'$\log g$')
-    ax[0,0].set_ylabel(r'$f_r/f-1$')
+        ax[0,0].plot(data_x, fr / data_y - 1)
+        ax[0,0].set_xlabel(r'$\log g$')
+        ax[0,0].set_ylabel(r'$f_r/f-1$')
 
-    ax[0,1].plot(data_x[qs > q_min], ((1/qs)*(fr / data_y - 1))[qs > q_min])
-    ax[0,1].set_xlabel(r'$\log g$')
-    ax[0,1].set_ylabel(r'$(1/q)(f_r/f-1)$')
+        ax[0,1].plot(data_x[qs > q_min], ((1/qs)*(fr / data_y - 1))[qs > q_min])
+        ax[0,1].set_xlabel(r'$\log g$')
+        ax[0,1].set_ylabel(r'$(1/q)(f_r/f-1)$')
 
-    ax[1,0].plot(data_x, qs)
-    ax[1,0].set_xlabel(r'$\log g$')
-    ax[1,0].set_ylabel(r'$q$')
+        ax[1,0].plot(data_x, qs)
+        ax[1,0].set_xlabel(r'$\log g$')
+        ax[1,0].set_ylabel(r'$q$')
 
-    ax[1,1].plot(data_x[qs > q_min], (dt_dlogg * (1/qs)*(fr / data_y - 1))[qs > q_min])
-    ax[1,1].set_xlabel(r'$\log g$')
-    ax[1,1].set_ylabel(r'$\tau_{\rm CHeB}$')
+        ax[1,1].plot(data_x[qs > q_min], (dt_dlogg * (1/qs)*(fr / data_y - 1))[qs > q_min])
+        ax[1,1].set_xlabel(r'$\log g$')
+        ax[1,1].set_ylabel(r'$\tau_{\rm CHeB}$')
 
-    # Average tau_cheb over the CHeB
-    tau_cheb_s.append((
-        m_min,m_max,
-        np.sum((dlogg * dt_dlogg *(fr / data_y - 1))[qs > q_min])
-    ))
+        # Average tau_cheb over the CHeB
+        tau_cheb_s[-1].append((
+            metal_low,metal_high,mass_low,mass_high,
+            np.sum((dlogg * dt_dlogg *(fr / data_y - 1))[qs > q_min])
+        ))
 
-    plt.savefig(f'cache/fit_diagnostic_{m_min:2g}_{m_max:2g}.pdf')
-    plt.tight_layout()
-    plt.clf()
+        plt.savefig(f'cache/fit_diagnostic_{m_min:2g}_{m_max:2g}.pdf')
+        plt.tight_layout()
+        plt.clf()
 
 # Plot versus metallicity
-plt.figure()
-for m_min,m_max,tau_cheb in tau_cheb_s[:-1]:
-    plt.scatter([0.5*(m_min+m_max)],[tau_cheb],color='k')
-plt.axhline(tau_cheb_s[-1][2])
-plt.xlabel(r'$[M/H]$')
-plt.ylabel(r'$\tau_{\rm CHeB}$')
+tau_cheb_s = np.array(tau_cheb_s)
+fig = plt.figure()
+cntr = plt.pcolormesh(mass_bins, mh_bins, tau_cheb_s[:-1,:-1,-1])
+cbar = fig.colorbar(cntr, ax=ax)
+cbar.ax.set_ylabel(r'$\tau_{\rm CHeB}$')
+plt.xlabel(r'$M/M_\odot$')
+plt.ylabel(r'$[M/H]$')
 plt.savefig(f'cache/tau_cheb_metals.pdf')
 plt.clf()
