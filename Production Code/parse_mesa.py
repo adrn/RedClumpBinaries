@@ -5,12 +5,13 @@ from pickle import dump
 pms_cutoff = 1e8 # Ignore times before 100 MYr (pre-main sequence)
 log_g_RGB_cut = 3.
 
-metallicities = [(0.005,'main_Z_sweep_time_2022_02_07_10_57_16_sha_0b9f'),
-				(0.01,'main_Z_sweep_time_2022_02_07_10_57_22_sha_bdd5'),
-				(0.015,'main_Z_sweep_time_2022_02_07_10_57_27_sha_b219')
+metallicities = [
+				(0.014*10**-0.6,'main_Z_sweep_time_2022_02_10_10_04_06_sha_35c6'),
+				(0.014*10**-0.2,'main_Z_sweep_time_2022_02_10_10_04_12_sha_a8c8'),
+				(0.014*10**0.2,'main_Z_sweep_time_2022_02_10_10_04_24_sha_b51f'),
 				]
 
-masses = [1.0,1.2,1.4,1.6,1.8,2.0]
+masses = [0.9,1.125,1.375,1.625,1.875]
 
 
 data_dir = '/Users/ajermyn/Dropbox/Active_Projects/RedClumpBinaries/MESA_models/runs/'
