@@ -26,7 +26,10 @@ def dt_dlogg_ascent(mass, metallicity, log_g, dlog_g):
 			i_mass = i
 	if i_mass == -1:
 		print('Error: out of bounds mass',mass)
-		exit()
+		i_mass = 0
+		mix_i0 = 1
+		mix_i1 = 0
+#		exit()
 
 	i_metal = -1
 	for i in range(len(metallicities)-1):
@@ -34,12 +37,18 @@ def dt_dlogg_ascent(mass, metallicity, log_g, dlog_g):
 			mix_j0 = (metallicity - metallicity[i][0])/(metallicity[i+1][0]-metallicity[i][0])
 			mix_j1 = 1 - mix_i0
 			i_metal = i
+	if i_metal == -1:
+		print('Error: out of bounds metal',metallicity)
+		i_metal = 0
+		mix_j0 = 1
+		mix_j1 = 0
+#		exit()
 
 
-	d_00 = get_dt_dlogg_ascent_single_mass(masses[i_mass],   metallicities[i_metal],    log_g, dlog_g)
-	d_01 = get_dt_dlogg_ascent_single_mass(masses[i_mass],   metallicities[i_metal+1],  log_g, dlog_g)
-	d_10 = get_dt_dlogg_ascent_single_mass(masses[i_mass+1], metallicities[i_metal],    log_g, dlog_g)
-	d_11 = get_dt_dlogg_ascent_single_mass(masses[i_mass+1], metallicities[i_metal+1],  log_g, dlog_g)
+	d_00 = get_dt_dlogg_ascent_single(masses[i_mass],   metallicities[i_metal],    log_g, dlog_g)
+	d_01 = get_dt_dlogg_ascent_single(masses[i_mass],   metallicities[i_metal+1],  log_g, dlog_g)
+	d_10 = get_dt_dlogg_ascent_single(masses[i_mass+1], metallicities[i_metal],    log_g, dlog_g)
+	d_11 = get_dt_dlogg_ascent_single(masses[i_mass+1], metallicities[i_metal+1],  log_g, dlog_g)
 
 	d_0 = d_00 * mix_j0 + d_01 * mix_j1
 	d_1 = d_10 * mix_j0 + d_11 * mix_j1
