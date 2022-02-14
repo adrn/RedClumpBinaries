@@ -4,7 +4,7 @@ from pickle import load
 masses,metallicities,data = load(open('cache/mesa_parsed.data','rb'))
 
 def get_dt_dlogg_ascent_single(mass, metallicity, log_g, dlog_g):
-	log_g_MESA, age, i_TRGB, dt = data[(mass,metallicity)]
+	log_g_MESA, age, i_TRGB, dt = data[(mass,metallicity[0])]
 
 	ran = np.where(
 			(log_g_MESA > log_g - dlog_g/2) &
