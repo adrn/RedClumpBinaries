@@ -22,7 +22,7 @@ fr_fits = []
 for i in range(len(opts)):
     fr_fits.append([])
     for j in range(len(opts[i])):
-        metal_low,metal_high,mass_low,mass_high,metal_mass_mask,q_res,_,_ = opts[i][j]
+        metal_low,metal_high,mass_low,mass_high,metal_mass_mask,q_res,_,_,_ = opts[i][j]
 
         # Bin binary fraction in log(g)
         data_x, data_y, data_yerr = bin_f_binary_in_logg(metadata, binaries_mask, metal_mass_mask, logg_bins)
