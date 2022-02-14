@@ -1,14 +1,15 @@
 import mesa_reader as mr
 import numpy as np
 from pickle import dump
+from config import Z_solar
 
 pms_cutoff = 1e8 # Ignore times before 100 MYr (pre-main sequence)
 log_g_RGB_cut = 3.
 
 metallicities = [
-				(0.014*10**-0.6,'main_Z_sweep_time_2022_02_10_10_04_06_sha_35c6'),
-				(0.014*10**-0.2,'main_Z_sweep_time_2022_02_10_10_04_12_sha_a8c8'),
-				(0.014*10**0.2,'main_Z_sweep_time_2022_02_10_10_04_24_sha_b51f'),
+				(Z_solar*10**-0.6,'main_Z_sweep_time_2022_02_10_10_04_06_sha_35c6'),
+				(Z_solar*10**-0.2,'main_Z_sweep_time_2022_02_10_10_04_12_sha_a8c8'),
+				(Z_solar*10**0.2,'main_Z_sweep_time_2022_02_10_10_04_24_sha_b51f'),
 				]
 
 masses = [0.9,1.125,1.375,1.625,1.875]
