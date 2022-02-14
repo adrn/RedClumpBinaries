@@ -69,5 +69,7 @@ def fit_mixture_model(logg_data):
 
         # Store the distribution in case we want to plot it
         prob_density = np.exp(pmx.eval_in_model(lnlike_grid, point=res))
+
+        samples = pmx.sample(start=res, return_inferencedata=True, cores=4)
     
-    return res, grid, prob_density
+    return res, grid, prob_density, samples

@@ -27,8 +27,8 @@ for metal_low, metal_high in list(zip(mh_bins[:-1], mh_bins[1:])) + [(mh_bins.mi
         mask = mask_metallicity_and_mass(metadata, metal_low, metal_high, mass_low, mass_high)
         logg_data = metadata['LOGG'][mask]
         
-        res, grid, prob_density = fit_mixture_model(logg_data)
-        opts[-1].append([metal_low,metal_high,mass_low,mass_high,mask,res,logg_data,prob_density])
+        res, grid, prob_density, samples = fit_mixture_model(logg_data)
+        opts[-1].append([metal_low,metal_high,mass_low,mass_high,mask,res,logg_data,prob_density,samples])
 
         # Plot the fit just for sanity checks
         plt.figure()
