@@ -10,7 +10,7 @@ from aesara_theano_fallback import tensor as tt
 import pymc3 as pm
 import pymc3_ext as pmx
 
-from config import logg_lims, logg_bins, q_min, dlogg, mass_bins, mh_bins
+from config import logg_lims, logg_bins, q_min, dlogg, mass_bins, mh_bins, Z_solar
 from slice_helpers import bin_f_binary_in_logg
 from fit_helpers import q, fit_line
 from pickle import load, dump
@@ -26,37 +26,38 @@ tau_cheb_s = []
 for i in range(len(q_fits)):
     tau_cheb_s.append([])
     for j in range(len(q_fits[i])):
-        # Unpack fit data
-        metal_low,metal_high,mass_low,mass_high, metal_mask, _, _, _, q_samples = q_fits[i][j]
-        _, _, _, _, _, _, _, fr_samples = fr_fits[i][j]
+        # Load fr samples
+        metal_low,metal_high,mass_low,mass_high,metal_mass_mask,slope,offset,fr_samples = fr_fits[i][j]
 
         # Bin binary fraction in log(g)
-        data_x, data_y, data_yerr = bin_f_binary_in_logg(metadata, binaries_mask, metal_mask, logg_bins)
+        data_x, data_y, data_yerr = bin_f_binary_in_logg(metadata, binaries_mask, metal_mass_mask, logg_bins)
 
         # Calculate fr
-        slope = fr_samples['slope']
-        offset = fr_samples['offset']
-        fr = data_x * slope + offset
+        slope = fr_samples.posterior.slope.values.flatten()
+        offset = fr_samples.posterior.const_y.values.flatten()
+        fr = data_x[:,np.newaxis] * slope[np.newaxis,:] + offset[np.newaxis,:]
 
         # Calculate q
-        mu = q_samples['mu_logg']
-        sigma = np.exp(q_samples['logsigma_logg'])
-        qs = q(data_x, mu, sigma)
+        _,_,_,_,_, _, _, _, q_samples = q_fits[i][j]
+        mu = q_samples.posterior.mu_logg.values.flatten()
+        sigma = np.exp(q_samples.posterior.logsigma_logg.values.flatten())
+        qs = q(data_x[:,np.newaxis], mu[np.newaxis,:], sigma[np.newaxis,:])
+
 
         # Get dt/dlog(g) for the ascent
         mass = 0.5 * (mass_low + mass_high)
         metal = Z_solar * 10**(0.5 * (metal_low + metal_high))
-        dt_dlogg = np.array(list(dt_dlogg_ascent(mass, metal, logg, dlogg) for logg in data_x))
+        dt_dlogg = np.array(list(dt_dlogg_ascent(mass, metal, logg, dlogg) for logg in data_x))[:,np.newaxis]
 
         # Plot the fit just for sanity checks
         if plot:
             fig, ax = plt.subplots(2, 2, figsize=(8, 7))
 
-            ax[0,0].plot(data_x, np.mean(fr / data_y - 1,axis=1))
+            ax[0,0].plot(data_x, np.mean(fr / data_y[:,np.newaxis] - 1,axis=1))
             ax[0,0].set_xlabel(r'$\log g$')
             ax[0,0].set_ylabel(r'$f_r/f-1$')
 
-            ax[0,1].plot(data_x[qs > q_min], np.mean(((1/qs)*(fr / data_y - 1))[qs > q_min],axis=1))
+            ax[0,1].plot(data_x[qs > q_min], np.mean(((1/qs)*(fr / data_y[:,np.newaxis] - 1))[qs > q_min],axis=1))
             ax[0,1].set_xlabel(r'$\log g$')
             ax[0,1].set_ylabel(r'$(1/q)(f_r/f-1)$')
 
@@ -64,7 +65,7 @@ for i in range(len(q_fits)):
             ax[1,0].set_xlabel(r'$\log g$')
             ax[1,0].set_ylabel(r'$q$')
 
-            ax[1,1].plot(data_x[qs > q_min], np.mean((dt_dlogg * (1/qs)*(fr / data_y - 1))[qs > q_min],axis=1))
+            ax[1,1].plot(data_x[qs > q_min], np.mean((dt_dlogg * (1/qs)*(fr / data_y[:,np.newaxis] - 1))[qs > q_min],axis=1))
             ax[1,1].set_xlabel(r'$\log g$')
             ax[1,1].set_ylabel(r'$\tau_{\rm CHeB}$')
 
@@ -75,10 +76,10 @@ for i in range(len(q_fits)):
         # Average tau_cheb over the CHeB
         tau_cheb_s[-1].append((
             metal_low,metal_high,mass_low,mass_high,
-            np.mean(np.sum((dlogg * dt_dlogg *(fr / data_y - 1))[qs > q_min],axis=0)),
-            np.std(np.sum((dlogg * dt_dlogg *(fr / data_y - 1))[qs > q_min],axis=0)),
-            np.mean(np.sum((dlogg * dt_dlogg *(fr / data_y - 1))[qs > q_min],axis=0) / np.sum((dlogg * dt_dlogg)[qs > q_min],axis=0))
-            np.std(np.sum((dlogg * dt_dlogg *(fr / data_y - 1))[qs > q_min],axis=0) / np.sum((dlogg * dt_dlogg)[qs > q_min],axis=0))
+            np.mean(np.sum((dlogg * dt_dlogg *(fr / data_y[:,np.newaxis] - 1))[qs > q_min],axis=0)),
+            np.std(np.sum((dlogg * dt_dlogg *(fr / data_y[:,np.newaxis] - 1))[qs > q_min],axis=0)),
+            np.mean(np.sum((dlogg * dt_dlogg *(fr / data_y[:,np.newaxis] - 1))[qs > q_min],axis=0) / np.sum((dlogg * dt_dlogg)[qs > q_min],axis=0)),
+            np.std(np.sum((dlogg * dt_dlogg *(fr / data_y[:,np.newaxis] - 1))[qs > q_min],axis=0) / np.sum((dlogg * dt_dlogg)[qs > q_min],axis=0))
         ))
 
 
