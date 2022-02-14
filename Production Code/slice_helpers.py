@@ -27,7 +27,7 @@ def bin_f_binary_in_logg(metadata, binaries_mask, mask, logg_bins):
     data_y = data_y[good_idx]
     data_yerr = data_yerr[good_idx]
     
-    return data_x, data_y, data_yerr, ratio
+    return data_x, data_y, data_yerr
 
 def mask_metallicity_and_mass(metadata, metal_low, metal_high, mass_low, mass_high):
     mask = (
