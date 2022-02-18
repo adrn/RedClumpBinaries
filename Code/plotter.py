@@ -3,10 +3,10 @@ import matplotlib.pyplot as plt
 import mesa_reader as mr
 
 pms_cutoff = 1e8 # Ignore times before 100 MYr (pre-main sequence)
-log_g_RGB_cut = 3.
+log_g_RGB_cut = 2.9
 
 # Get the 1.2 M_sun Z=0.02 model track
-h=mr.MesaData('../ModelTracks/m=1.0_z=0.02.data')
+h=mr.MesaData('../ModelTracks/m=1.2_z=0.02.data')
 
 age = h.star_age
 
@@ -24,6 +24,8 @@ print(log_g.shape)
 
 fig, ax = plt.subplots()
 ax.plot(age, log_g[sel])
+ax.set_ylim([2.3,2.45])
+ax.set_xlim([1e7,4e7])
 plt.xlabel('Time Since Start of RGB (years)')
 plt.ylabel('$\log g / \mathrm{cm\,s^{-2}}$')
-plt.savefig('../Plots/log_g_1.0_msun.pdf')
+plt.savefig('../Plots/log_g_1.2_msun.pdf')
