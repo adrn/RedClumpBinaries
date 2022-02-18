@@ -28,7 +28,7 @@ for j in range(len(q_fits[0])):
         metal_low,metal_high,mass_low,mass_high,metal_mass_mask,slope,offset,fr_samples = fr_fits[i][j]
 
         # Bin binary fraction in log(g)
-        data_x, data_y, data_yerr = bin_f_binary_in_logg(metadata, binaries_mask, metal_mass_mask, logg_bins)
+        data_x, data_y, data_yerr, H_all = bin_f_binary_in_logg(metadata, binaries_mask, metal_mass_mask, logg_bins)
 
         # Calculate fr
         slope = fr_samples.posterior.slope.values.flatten()
@@ -42,6 +42,8 @@ for j in range(len(q_fits[0])):
         sigma = np.exp(q_samples.posterior.logsigma_logg.values.flatten())
         qs = q(data_x[:,np.newaxis], mu[np.newaxis,:], sigma[np.newaxis,:])
 
+        # Number of stars
+        N_stars = int(sum(H_all[qmean > q_min]))
 
         # Get dt/dlog(g) for the ascent
         mass = 0.5 * (mass_low + mass_high)
@@ -52,32 +54,34 @@ for j in range(len(q_fits[0])):
 
         # Average tau_cheb over the CHeB
         tau_cheb_s.append((
-            metal_low,metal_high,mass_low,mass_high,logg_start,logg_end,
+            metal_low,metal_high,mass_low,mass_high,logg_start,logg_end,N_stars,
             np.mean(np.sum((dlogg * dt_dlogg *(fr / data_y[:,np.newaxis] - 1))[qmean > q_min],axis=0)),
             np.std(np.sum((dlogg * dt_dlogg *(fr / data_y[:,np.newaxis] - 1))[qmean > q_min],axis=0)),
-            np.mean(np.sum((dlogg * dt_dlogg *(fr / data_y[:,np.newaxis] - 1))[qmean > q_min],axis=0) / np.sum((dlogg * dt_dlogg)[qmean > q_min],axis=0)),
-            np.std(np.sum((dlogg * dt_dlogg *(fr / data_y[:,np.newaxis] - 1))[qmean > q_min],axis=0) / np.sum((dlogg * dt_dlogg)[qmean > q_min],axis=0)),
-            np.sum((dlogg * dt_dlogg)[qmean > q_min])
+            np.sum((dlogg * dt_dlogg)[qmean > q_min]),
+            np.mean(np.mean(((fr / data_y[:,np.newaxis] - 1))[qmean > q_min],axis=0)),
+            np.std(np.mean(((fr / data_y[:,np.newaxis] - 1))[qmean > q_min],axis=0)),
         ))
 
 tau_cheb_s = np.array(tau_cheb_s)
 print(tau_cheb_s)
 
 s = ''
-s = s + r'\tablehead{\colhead{$[\mathrm{M}/\mathrm{H}]_{\rm min}$} &'
-s = s + r'\colhead{$[\mathrm{M}/\mathrm{H}]_{\rm max}$} &'
+s = s + r'\tablehead{'
 s = s + r'\colhead{$(M_\star/M_\odot)_{\rm min}$} &'
 s = s + r'\colhead{$(M_\star/M_\odot)_{\rm max}$} &'
+s = s + r'\colhead{$[\mathrm{M}/\mathrm{H}]_{\rm min}$} &'
+s = s + r'\colhead{$[\mathrm{M}/\mathrm{H}]_{\rm max}$} &'
+s = s + r'\colhead{$N_{\rm stars}$} &'
 s = s + r'\colhead{$\log g_{\rm min}$} &'
 s = s + r'\colhead{$\log g_{\rm max}$} &'
 s = s + r'\colhead{$\tau_{\rm RGB}/\mathrm{Myr}$} &'
 s = s + r'\colhead{$\tau_{\rm CHeB}/\mathrm{Myr}$} &'
 s = s + r'\colhead{$\sigma_{\tau_{\rm CHeB}}/\mathrm{Myr}$} &'
-s = s + r'\colhead{$f_{\rm CHeB}$} &'
+s = s + r'\colhead{$f_{\rm CHeB}$} &'                           # Binary deficit
 s = s + r'\colhead{$\sigma_{f_{\rm CHeB}}$}'
 s = s + '}\n\startdata\n'
-for metal_min, metal_max, mass_min, mass_max, logg_start, logg_end, tau, tau_sigma, f, f_sigma, tau_RGB in tau_cheb_s:
-    s = s + f'{mass_min:.2g} & {mass_max:2g} & {metal_min:.2g} & {metal_max:.2g} & {logg_start:2g}& {logg_end:2g} & {tau_RGB/1e6:.2g} & {tau/1e6:.2g} & {tau_sigma/1e6:.2g} & {f:.2g} & {f_sigma:.2g} \\\\\n'
+for metal_min, metal_max, mass_min, mass_max, logg_start, logg_end, N_stars, tau, tau_sigma, tau_RGB, f, f_sigma in tau_cheb_s:
+    s = s + f'{mass_min:.2g} & {mass_max:2g} & {metal_min:.2g} & {metal_max:.2g} & {int(N_stars)} & {logg_start:2g}& {logg_end:2g} & {tau_RGB/1e6:.2g} & {tau/1e6:.2g} & {tau_sigma/1e6:.2g} & {f:.2g} & {f_sigma:.2g} \\\\\n'
 s = s + '\enddata\n'
 
 fi = open('../writeup/table.tex','w+')

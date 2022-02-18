@@ -150,3 +150,14 @@ The object on the LHS is the thing we want! And note that it's independent of $\
 
 
 
+## Some more thoughts
+
+I got worried about $q$ for a while and managed to make myself not worried, so I wanted to write that down.
+
+Suppose we had observational uncertainties that blurred the RC out more, so that $q$ is a broader distribution. Let's say it doubles the width. That changes $f_r/f-1$ by making $f_r/f$ closer to $1$ (roughly halves it), but we don't want our headline number to be sensitive to this blurring.
+
+Fortunately it isn't, at least not to leading order. The quantity we estimate $\tau_{\rm CHeB}$ from has a $1/q$ out front, so even though $f_r/f-1$ roughly halves if we double the width of $q$,  that gets cancelled out by the magnitude of $q$ halving because the integral of $q$ is conserved.
+
+But wait, you say, we integrate with respect to the measure $q$, so doesn't this come out dependent on the blur? No! Because the integral is now over twice the range. So we've halved $f_r/f-1$ but integrated it over twice the range, giving a nearly-unchanged number ('nearly' because $dt/d\log g$ is varying slowly in the background).
+
+So, $f_r/f-1$ is only meaningful as a way of describing the observations. $\tau_{\rm CHeB}$ though is physically meaningful.
