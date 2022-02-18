@@ -19,9 +19,9 @@ metadata, binaries_mask = load(open('cache/parsed.data','rb'))
 
 # Loop over metallicity and mass bins and fit a Gaussian+background model.
 opts = []
-for metal_low, metal_high in list(zip(mh_bins[:-1], mh_bins[1:])) + [(mh_bins.min(), mh_bins.max())]:
+for metal_low, metal_high in list(zip(mh_bins[:-1], mh_bins[1:])):
     opts.append([])
-    for mass_low, mass_high in list(zip(mass_bins[:-1], mass_bins[1:])) + [(mass_bins.min(), mass_bins.max())]:
+    for mass_low, mass_high in list(zip(mass_bins[:-1], mass_bins[1:])):
         print('Fitting metallicity range',metal_low,metal_high,'and mass range',mass_low,mass_high)
 
         mask = mask_metallicity_and_mass(metadata, metal_low, metal_high, mass_low, mass_high)

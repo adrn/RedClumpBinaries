@@ -1,7 +1,7 @@
 import numpy as np
 
 logg_lims = (1.8, 3.2)
-dlogg = 0.05
+dlogg = 0.025
 logg_bins = np.arange(*logg_lims, dlogg)
 
 n_metal_bins = 3

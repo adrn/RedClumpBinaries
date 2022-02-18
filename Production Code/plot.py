@@ -20,7 +20,7 @@ metadata, binaries_mask = load(open('cache/parsed.data','rb'))
 q_fits = load(open('cache/q_fits.data','rb'))
 fr_fits = load(open('cache/fr_fits.data','rb'))
 
-plot = False
+plot = True
 tau_cheb_s = []
 
 for i in range(len(q_fits)):
@@ -38,11 +38,11 @@ for i in range(len(q_fits)):
         fr = data_x[:,np.newaxis] * slope[np.newaxis,:] + offset[np.newaxis,:]
 
         # Calculate q
-        _,_,_,_,_, _, _, _, q_samples = q_fits[i][j]
+        _,_,_,_,_, qres, _, _, q_samples = q_fits[i][j]
+        qmean = q(data_x, qres['mu_logg'], np.exp(qres['logsigma_logg']))
         mu = q_samples.posterior.mu_logg.values.flatten()
         sigma = np.exp(q_samples.posterior.logsigma_logg.values.flatten())
         qs = q(data_x[:,np.newaxis], mu[np.newaxis,:], sigma[np.newaxis,:])
-
 
         # Get dt/dlog(g) for the ascent
         mass = 0.5 * (mass_low + mass_high)
@@ -57,15 +57,15 @@ for i in range(len(q_fits)):
             ax[0,0].set_xlabel(r'$\log g$')
             ax[0,0].set_ylabel(r'$f_r/f-1$')
 
-            ax[0,1].plot(data_x[qs > q_min], np.mean(((1/qs)*(fr / data_y[:,np.newaxis] - 1))[qs > q_min],axis=1))
+            ax[0,1].plot(data_x[qmean > q_min], np.mean(((1/qs)*(fr / data_y[:,np.newaxis] - 1))[qmean > q_min],axis=1))
             ax[0,1].set_xlabel(r'$\log g$')
             ax[0,1].set_ylabel(r'$(1/q)(f_r/f-1)$')
 
-            ax[1,0].plot(data_x, qs)
+            ax[1,0].plot(data_x, qmean)
             ax[1,0].set_xlabel(r'$\log g$')
             ax[1,0].set_ylabel(r'$q$')
 
-            ax[1,1].plot(data_x[qs > q_min], np.mean((dt_dlogg * (1/qs)*(fr / data_y[:,np.newaxis] - 1))[qs > q_min],axis=1))
+            ax[1,1].plot(data_x[qmean > q_min], np.mean((dt_dlogg * (1/qs)*(fr / data_y[:,np.newaxis] - 1))[qmean > q_min],axis=1))
             ax[1,1].set_xlabel(r'$\log g$')
             ax[1,1].set_ylabel(r'$\tau_{\rm CHeB}$')
 
@@ -76,12 +76,13 @@ for i in range(len(q_fits)):
         # Average tau_cheb over the CHeB
         tau_cheb_s[-1].append((
             metal_low,metal_high,mass_low,mass_high,
-            np.mean(np.sum((dlogg * dt_dlogg *(fr / data_y[:,np.newaxis] - 1))[qs > q_min],axis=0)),
-            np.std(np.sum((dlogg * dt_dlogg *(fr / data_y[:,np.newaxis] - 1))[qs > q_min],axis=0)),
-            np.mean(np.sum((dlogg * dt_dlogg *(fr / data_y[:,np.newaxis] - 1))[qs > q_min],axis=0) / np.sum((dlogg * dt_dlogg)[qs > q_min],axis=0)),
-            np.std(np.sum((dlogg * dt_dlogg *(fr / data_y[:,np.newaxis] - 1))[qs > q_min],axis=0) / np.sum((dlogg * dt_dlogg)[qs > q_min],axis=0))
+            np.mean(np.sum((dlogg * dt_dlogg *(fr / data_y[:,np.newaxis] - 1))[qmean > q_min],axis=0)),
+            np.std(np.sum((dlogg * dt_dlogg *(fr / data_y[:,np.newaxis] - 1))[qmean > q_min],axis=0)),
+            np.mean(np.sum((dlogg * dt_dlogg *(fr / data_y[:,np.newaxis] - 1))[qmean > q_min],axis=0) / np.sum((dlogg * dt_dlogg)[qmean > q_min],axis=0)),
+            np.std(np.sum((dlogg * dt_dlogg *(fr / data_y[:,np.newaxis] - 1))[qmean > q_min],axis=0) / np.sum((dlogg * dt_dlogg)[qmean > q_min],axis=0))
         ))
 
+        print(tau_cheb_s[-1][-1])
 
 tau_cheb_s = np.array(tau_cheb_s)
 
@@ -90,21 +91,34 @@ print(tau_cheb_s)
 if plot:
     # Plot grid
     fig = plt.figure()
-    ax = plt.subplot(111)
-    cntr = plt.pcolormesh(mass_bins, mh_bins, tau_cheb_s[:-1,:-1,4])
+    ax = plt.subplot(221)
+    cntr = plt.pcolormesh(mass_bins, mh_bins, tau_cheb_s[...,4])
     cbar = fig.colorbar(cntr, ax=ax)
     cbar.ax.set_ylabel(r'$\tau_{\rm CHeB}/\mathrm{yr}$')
     plt.xlabel(r'$M/M_\odot$')
     plt.ylabel(r'$[M/H]$')
-    plt.savefig(f'cache/tau_cheb.pdf')
-    plt.clf()
 
-    fig = plt.figure()
-    ax = plt.subplot(111)
-    cntr = plt.pcolormesh(mass_bins, mh_bins, tau_cheb_s[:-1,:-1,5], vmin=0.5, vmax=3)
+    ax = plt.subplot(222)
+    cntr = plt.pcolormesh(mass_bins, mh_bins, tau_cheb_s[...,4]/tau_cheb_s[...,5])
     cbar = fig.colorbar(cntr, ax=ax)
-    cbar.ax.set_ylabel(r'$\tau_{\rm CHeB}/\tau_{\rm RGB}$')
+    cbar.ax.set_ylabel(r'$\tau_{\rm CHeB}/\sigma_{\tau_{\rm CHeB}}$')
     plt.xlabel(r'$M/M_\odot$')
     plt.ylabel(r'$[M/H]$')
-    plt.savefig(f'cache/tau_cheb_div_tau_RGB.pdf')
+
+    ax = plt.subplot(223)
+    cntr = plt.pcolormesh(mass_bins, mh_bins, tau_cheb_s[...,6])
+    cbar = fig.colorbar(cntr, ax=ax)
+    cbar.ax.set_ylabel(r'$f_{\rm CHeB} \equiv \tau_{\rm CHeB}/\tau_{\rm RGB}$')
+    plt.xlabel(r'$M/M_\odot$')
+    plt.ylabel(r'$[M/H]$')
+
+    ax = plt.subplot(224)
+    cntr = plt.pcolormesh(mass_bins, mh_bins, tau_cheb_s[...,7])
+    cbar = fig.colorbar(cntr, ax=ax)
+    cbar.ax.set_ylabel(r'$f_{\rm CHeB}/\sigma_{f_{\rm CHeB}}$')
+    plt.xlabel(r'$M/M_\odot$')
+    plt.ylabel(r'$[M/H]$')
+
+
+    plt.savefig(f'cache/tau_cheb.pdf')
     plt.clf()

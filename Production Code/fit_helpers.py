@@ -28,7 +28,7 @@ def fit_line(x, y, yerr):
             'slope': init_slope
         })
 
-        samples = pmx.sample(start=res, return_inferencedata=True, cores=1)
+        samples = pmx.sample(start=res, tune=500, draws=500, return_inferencedata=True, cores=2)
     
     return res, samples
 
@@ -70,6 +70,6 @@ def fit_mixture_model(logg_data):
         # Store the distribution in case we want to plot it
         prob_density = np.exp(pmx.eval_in_model(lnlike_grid, point=res))
 
-        samples = pmx.sample(start=res, return_inferencedata=True, cores=1)
+        samples = pmx.sample(start=res, tune=500, draws=500, return_inferencedata=True, cores=2)
     
     return res, grid, prob_density, samples

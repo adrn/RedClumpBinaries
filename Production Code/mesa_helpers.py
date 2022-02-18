@@ -4,7 +4,7 @@ from pickle import load
 masses,metallicities,data = load(open('cache/mesa_parsed.data','rb'))
 
 def get_dt_dlogg_ascent_single(mass, metallicity, log_g, dlog_g):
-	log_g_MESA, age, i_TRGB, dt = data[(mass,metallicity[0])]
+	log_g_MESA, age, i_TRGB, dt = data[(round(mass,5),round(metallicity,5))]
 
 	ran = np.where(
 			(log_g_MESA > log_g - dlog_g/2) &
@@ -16,41 +16,17 @@ def get_dt_dlogg_ascent_single(mass, metallicity, log_g, dlog_g):
 
 	return dage/dlog_g
 
+
 def dt_dlogg_ascent(mass, metallicity, log_g, dlog_g):
+	for i in range(len(metallicities)):
+		if metallicities[i][0] <= metallicity:
+			if abs(metallicities[i][0] - metallicity) < 1e-3:
+				return get_dt_dlogg_ascent_single(mass, metallicity[i][0], log_g, dlog_g)
+			elif metallicity <= metallicities[i+1][0]:
+				metal_low = metallicities[i][0]
+				metal_high = metallicities[i+1][0]
 
-	i_mass = -1
-	for i in range(len(masses)-1):
-		if masses[i] <= mass and masses[i+1] >= mass:
-			mix_i0 = (mass - masses[i])/(masses[i+1]-masses[i])
-			mix_i1 = 1 - mix_i0
-			i_mass = i
-	if i_mass == -1:
-		print('Error: out of bounds mass',mass)
-		i_mass = 0
-		mix_i0 = 1
-		mix_i1 = 0
-#		exit()
+				low = get_dt_dlogg_ascent_single(mass, metal_low, log_g, dlog_g)
+				high = get_dt_dlogg_ascent_single(mass, metal_high, log_g, dlog_g)
 
-	i_metal = -1
-	for i in range(len(metallicities)-1):
-		if metallicities[i][0] <= metallicity and metallicities[i+1][0] >= metallicity:
-			mix_j0 = (metallicity - metallicity[i][0])/(metallicity[i+1][0]-metallicity[i][0])
-			mix_j1 = 1 - mix_i0
-			i_metal = i
-	if i_metal == -1:
-		print('Error: out of bounds metal',metallicity)
-		i_metal = 0
-		mix_j0 = 1
-		mix_j1 = 0
-#		exit()
-
-
-	d_00 = get_dt_dlogg_ascent_single(masses[i_mass],   metallicities[i_metal],    log_g, dlog_g)
-	d_01 = get_dt_dlogg_ascent_single(masses[i_mass],   metallicities[i_metal+1],  log_g, dlog_g)
-	d_10 = get_dt_dlogg_ascent_single(masses[i_mass+1], metallicities[i_metal],    log_g, dlog_g)
-	d_11 = get_dt_dlogg_ascent_single(masses[i_mass+1], metallicities[i_metal+1],  log_g, dlog_g)
-
-	d_0 = d_00 * mix_j0 + d_01 * mix_j1
-	d_1 = d_10 * mix_j0 + d_11 * mix_j1
-
-	return d_0 * mix_i0 + d_1 * mix_i1
+				return (low * (metallicity - metal_low) + high * (metal_high - metallicity)) / (metal_high - metal_low)
